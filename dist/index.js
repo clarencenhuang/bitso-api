@@ -1,7 +1,7 @@
 const axios = require('axios');
-var qs =  require('qs');
+let qs =  require('qs');
 
-var usersRequests = {};
+let usersRequests = {};
 
 module.exports = {
   api: process.env.bitsoApi || "",
@@ -16,9 +16,6 @@ module.exports = {
   available_books: function(params = {}){
     return this.requestPublic('available_books/', params);
   },
-  available_books: function(params = {}){
-    return this.requestPublic('ticker/', params);
-  },
   order_book: function(params = {book:'btc_mxn'}){
     return this.requestPublic('order_book/', params);
   },
@@ -30,9 +27,9 @@ module.exports = {
   },
 
   requestPrivate: function(endpoint, params, method, credentials){
-    var secret = "";
-    var apiKey = "";
-    var baseUrl = this.baseUrl;
+    let secret = "";
+    let apiKey = "";
+    let baseUrl = this.baseUrl;
     if(credentials.key && credentials.secret){
       secret = credentials.secret;
       apiKey = credentials.key;
@@ -43,22 +40,22 @@ module.exports = {
     if(!usersRequests[apiKey]) usersRequests[apiKey] = [];
     return new Promise( function(resolve, refuse){
       usersRequests[apiKey].unshift(() => {
-        var nonce = new Date().getTime();
-        var json_payload = '';//params ? qs.stringify(params) : ""; // not working D:
-        var request_path = `/v3/${endpoint}?` + qs.stringify(params);
+        let nonce = new Date().getTime();
+        let json_payload = '';//params ? qs.stringify(params) : ""; // not working D:
+        let request_path = `/v3/${endpoint}?` + qs.stringify(params);
 
         // Create the signature
-        var Data = nonce + method.toLocaleUpperCase() + request_path + json_payload;
-        var crypto = require('crypto');
-        var signature = crypto.createHmac('sha256', secret).update(Data).digest('hex');
-        var auth_header = "Bitso " + apiKey + ":" + nonce + ":" + signature;
+        let Data = nonce + method.toLocaleUpperCase() + request_path + json_payload;
+        let crypto = require('crypto');
+        let signature = crypto.createHmac('sha256', secret).update(Data).digest('hex');
+        let auth_header = "Bitso " + apiKey + ":" + nonce + ":" + signature;
 
-        var config = {
+        let config = {
           headers: {
             'Authorization': auth_header,
           },
         };
-        var args =
+        let args =
           method === `get` ?
             [config] :
             [json_payload, config];
@@ -109,16 +106,16 @@ module.exports = {
     return this.requestPrivate('funding_destination/', params, 'get', credentials);
   },
   bitcoin_withdrawal: function(params = {amount: 0, address:'invalid'}, credentials={}){
-    if(amount == 0) return console.error("Incorrect withdrawal information");;
+    if(amount === 0) return console.error("Incorrect withdrawal information");;
     return this.requestPrivate('bitcoin_withdrawal/', params, 'post', credentials);
   },
   ether_withdrawal: function(params = {amount: 0, address:'invalid'}, credentials={}){
-    if(amount == 0) return console.error("Incorrect withdrawal information");;
+    if(amount === 0) return console.error("Incorrect withdrawal information");;
     return this.requestPrivate('ether_withdrawal/', params, 'post', credentials);
   },
   spei_withdrawal: function(params = {amount: 0, recipient_given_names:'invalid',
         recipient_family_names: "", clabe: "", notes_ref: "", numeric_ref: ""}, credentials={}){
-    if(amount == 0) return console.error("Incorrect withdrawal information");;
+    if(amount === 0) return console.error("Incorrect withdrawal information");;
     return this.requestPrivate('spei_withdrawal/', params, 'post', credentials);
   },
   mx_bank_codes: function(params = {}, credentials={}){
